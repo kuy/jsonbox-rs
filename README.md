@@ -1,8 +1,8 @@
-# 📦 jsonbox.rs ⚙️
+# jsonbox.rs
 
-**NOTICE: Alpha quality. Unstable API.**
+**⚠️ NOTICE: Alpha quality. Unstable API ⚠️**
 
-Rust wrapper for [jsonbox.io](https://jsonbox.io/).
+⚙️ Rust wrapper for 📦 [jsonbox.io](https://jsonbox.io/).
 
 ## Usage
 
