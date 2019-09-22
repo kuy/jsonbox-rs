@@ -1,6 +1,6 @@
 extern crate jsonbox;
 
-use jsonbox::client::{Client, Error};
+use jsonbox::{Client, Error};
 use serde::{Deserialize, Serialize};
 
 const BOX_ID: &str = "box_ed82aef3f93176996145";

@@ -1,6 +1,6 @@
 extern crate jsonbox;
 
-use jsonbox::client::{Client, Error};
+use jsonbox::{Client, Error};
 use serde::{Deserialize, Serialize};
 use std::io;
 
