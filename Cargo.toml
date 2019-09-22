@@ -15,3 +15,6 @@ name = "hello_jsonbox"
 
 [[example]]
 name = "basic"
+
+[[example]]
+name = "errors"

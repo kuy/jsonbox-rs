@@ -11,7 +11,7 @@ pub struct Greeting {
 }
 
 fn main() -> Result<(), Error> {
-    let client = Client::new("box_ed82aef3f93176996146");
+    let client = Client::new("kuy_ed82aef3f93176996146");
 
     let records: Vec<Greeting> = client.list()?;
     if let Some(record) = records.first() {

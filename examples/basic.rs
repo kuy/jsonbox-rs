@@ -3,8 +3,6 @@ extern crate jsonbox;
 use jsonbox::{Client, Error};
 use serde::{Deserialize, Serialize};
 
-const BOX_ID: &str = "box_ed82aef3f93176996145";
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Data {
     pub name: String,
@@ -21,7 +19,7 @@ impl Data {
 }
 
 fn main() -> Result<(), Error> {
-    let client = Client::new(BOX_ID);
+    let client = Client::new("box_ed82aef3f93176996145");
 
     let mut data = Data::new("kuy", "Hello, Jsonbox!");
     let (record, meta) = client.create(&data)?;
