@@ -1,29 +1,28 @@
 use reqwest;
-use serde::Deserialize;
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use snafu::{ResultExt, Snafu};
-use std::collections::HashMap;
-
-#[derive(Deserialize)]
-pub struct Record {
-    #[serde(rename = "_id")]
-    pub id: String,
-    #[serde(rename = "_createdOn")]
-    pub created_on: String,
-}
-
-pub type ListOp = Vec<Record>;
-pub type CreateOp = Record;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
     #[snafu_display("Network: {}", "source")]
     Network { source: reqwest::Error },
 
-    #[snafu_display("JSON deserialize: {}", "source")]
-    Json { source: reqwest::Error },
+    #[snafu_display("JSON: {}", "source")]
+    Json {
+        reason: String,
+        source: serde_json::Error,
+    },
 }
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
+
+#[derive(Deserialize)]
+pub struct Meta {
+    #[serde(rename = "_id")]
+    pub id: String,
+    #[serde(rename = "_createdOn")]
+    pub created_on: String,
+}
 
 pub struct Client {
     box_id: String,
@@ -38,23 +37,32 @@ impl Client {
         }
     }
 
-    pub fn list(&self) -> Result<ListOp> {
+    pub fn list<T>(&self) -> Result<Vec<T>>
+    where
+        T: DeserializeOwned,
+    {
         let mut res = reqwest::get(&self.endpoint).context(Network {})?;
-        let res: ListOp = res.json().context(Json {})?;
-        Ok(res)
+        let raw = res.text().context(Network {})?;
+        // println!("{}", raw);
+
+        let data: Vec<T> = serde_json::from_str(&raw).context(Json { reason: "data" })?;
+        Ok(data)
     }
 
-    pub fn create(&self) -> Result<CreateOp> {
-        let mut data = HashMap::new();
-        data.insert("greeting", "hello");
-
+    pub fn create<T>(&self, data: &T) -> Result<T>
+    where
+        T: Serialize + DeserializeOwned,
+    {
         let client = reqwest::Client::new();
         let mut res = client
             .post(&self.endpoint)
             .json(&data)
             .send()
             .context(Network {})?;
-        let res: CreateOp = res.json().context(Json {})?;
-        Ok(res)
+        let raw = res.text().context(Network {})?;
+        // println!("{}", raw);
+
+        let data: T = serde_json::from_str(&raw).context(Json { reason: "data" })?;
+        Ok(data)
     }
 }
