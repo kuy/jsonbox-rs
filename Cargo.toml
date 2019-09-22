@@ -1,0 +1,13 @@
+[package]
+name = "jsonbox"
+version = "0.0.1"
+authors = ["Yuki Kodama <endflow.net@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+reqwest = "0.9.20"
+serde = "1.0"
+snafu = "0.1.5"
+
+[[example]]
+name = "basic"
