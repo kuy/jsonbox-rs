@@ -2,6 +2,12 @@
 name = "jsonbox"
 version = "0.0.1"
 authors = ["Yuki Kodama <endflow.net@gmail.com>"]
+description = "Rust wrapper for jsonbox.io"
+homepage = "https://github.com/kuy/jsonbox-rs"
+documentation = "https://github.com/kuy/jsonbox-rs#usage"
+repository = "https://github.com/kuy/jsonbox-rs"
+readme = "README.md"
+license = "MIT"
 edition = "2018"
 
 [dependencies]
