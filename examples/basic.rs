@@ -25,12 +25,15 @@ fn main() -> Result<(), Error> {
     let (record, meta) = client.create(&data)?;
     println!("CREATE: data={:?}, meta={:?}", record, meta);
 
+    let (record, meta) = client.read::<Data>(&meta.id)?;
+    println!("READ: data={:?}, meta={:?}", record, meta);
+
+    let all: Vec<Data> = client.read_all()?;
+    println!("READ: len={}, all={:?}", all.len(), all);
+
     data.message = format!("Hello, GitHub! [{}]", meta.id);
     let _ = client.update(&meta.id, &data)?;
     println!("UPDATE: OK");
-
-    let all: Vec<Data> = client.list()?;
-    println!("READ: all={:?}", all);
 
     Ok(())
 }

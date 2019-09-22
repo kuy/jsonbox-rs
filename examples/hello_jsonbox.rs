@@ -13,7 +13,7 @@ pub struct Greeting {
 fn main() -> Result<(), Error> {
     let client = Client::new("kuy_ed82aef3f93176996146");
 
-    let records: Vec<Greeting> = client.list()?;
+    let records: Vec<Greeting> = client.read_all()?;
     if let Some(record) = records.first() {
         println!(
             "Greeting from {}: {}",
