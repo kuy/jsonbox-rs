@@ -2,43 +2,37 @@ extern crate jsonbox;
 
 use jsonbox::client::{Client, Error};
 use serde::{Deserialize, Serialize};
-use std::io;
 
-const BOX_ID: &str = "box_ed82aef3f93176996146";
+const BOX_ID: &str = "box_ed82aef3f93176996145";
 
-#[derive(Serialize, Deserialize)]
-pub struct Greeting {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Data {
     pub name: String,
     pub message: String,
+}
+
+impl Data {
+    fn new(name: &str, message: &str) -> Data {
+        Data {
+            name: name.to_string(),
+            message: message.to_string(),
+        }
+    }
 }
 
 fn main() -> Result<(), Error> {
     let client = Client::new(BOX_ID);
 
-    let records: Vec<Greeting> = client.list()?;
-    if let Some(record) = records.first() {
-        println!(
-            "Greeting from {}: {}",
-            record.name.trim(),
-            record.message.trim()
-        );
-    } else {
-        println!("No message left, you're the first.");
-    }
+    let mut data = Data::new("kuy", "Hello, Jsonbox!");
+    let (record, meta) = client.create(&data)?;
+    println!("CREATE: data={:?}, meta={:?}", record, meta);
 
-    println!("What is your name?");
-    let mut name = String::new();
-    let _ = io::stdin().read_line(&mut name);
+    data.message = format!("Hello, GitHub! [{}]", meta.id);
+    let _ = client.update(&meta.id, &data)?;
+    println!("UPDATE: OK");
 
-    println!("Leave message for next guest :)");
-    let mut message = String::new();
-    let _ = io::stdin().read_line(&mut message);
+    let all: Vec<Data> = client.list()?;
+    println!("READ: all={:?}", all);
 
-    let data = Greeting {
-        name: name.trim().to_string(),
-        message: message.trim().to_string(),
-    };
-    let _: Greeting = client.create(&data)?;
-    println!("Thank you!");
     Ok(())
 }
