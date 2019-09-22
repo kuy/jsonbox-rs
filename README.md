@@ -7,6 +7,10 @@ Rust wrapper for [jsonbox.io](https://jsonbox.io/).
 ## Usage
 
 ```rust
+// Declaration
+use jsonbox::{Client, Error};
+use serde::{Deserialize, Serialize};
+
 // Define struct
 #[derive(Serialize, Deserialize)]
 pub struct Data {
@@ -14,18 +18,29 @@ pub struct Data {
     pub message: String,
 }
 
-// Create client with <BOX_ID>
-let client = Client::new("enjoy_your_first_jsonbox_rs");
+fn main() -> Result<(), Error> {
+    // Create client with <BOX_ID>
+    let client = Client::new("enjoy_your_first_jsonbox_rs");
 
-// Put data
-let data = Data::new("kuy", "Hello, Jsonbox!");
-let _ = client.create(&data)?;
+    // Put data
+    let data = Data {
+        name: "kuy".into(),
+        message: "Hello, Jsonbox!".into(),
+    };
+    let (record, meta) = client.create(&data)?;
+    println!("CREATE: data={:?}, meta={:?}", record, meta);
+
+    Ok(())
+}
 ```
 
 ### CREATE
 
 ```rust
-let data = Data::new("kuy", "Hello, Jsonbox!");
+let data = Data {
+    name: "kuy".into(),
+    message: "Hello, Jsonbox!".into(),
+};
 let (record, meta) = client.create(&data)?;
 println!("CREATE: data={:?}, meta={:?}", record, meta);
 ```
