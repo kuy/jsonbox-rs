@@ -1,3 +1,6 @@
+[![crates.io](https://img.shields.io/crates/v/jsonbox.svg)](https://crates.io/crates/jsonbox)
+[![docs.rs](https://docs.rs/jsonbox/badge.svg)](https://docs.rs/jsonbox)
+
 # jsonbox.rs
 
 **⚠️ NOTICE: Alpha quality. Unstable API ⚠️**
