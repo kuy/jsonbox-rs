@@ -49,10 +49,9 @@ impl Client {
     where
         T: Serialize + DeserializeOwned,
     {
-        let endpoint = url::of_box(&self.box_id);
         let client = reqwest::Client::new();
         let mut res = client
-            .post(&endpoint)
+            .post(&url::of_box(&self.box_id))
             .json(&data)
             .send()
             .context(Network {})?;
@@ -115,6 +114,23 @@ impl Client {
         let mut res = client
             .put(&url::of_record(&self.box_id, id))
             .json(&data)
+            .send()
+            .context(Network {})?;
+        if res.status().is_success() {
+            Ok(())
+        } else {
+            let err: ErrorMessage = res.json().context(Network {})?;
+            Err(Error::General {
+                code: res.status().as_u16(),
+                message: err.message,
+            })
+        }
+    }
+
+    pub fn delete(&self, id: &str) -> Result<()> {
+        let client = reqwest::Client::new();
+        let mut res = client
+            .delete(&url::of_record(&self.box_id, id))
             .send()
             .context(Network {})?;
         if res.status().is_success() {

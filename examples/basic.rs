@@ -35,5 +35,8 @@ fn main() -> Result<(), Error> {
     let _ = client.update(&meta.id, &data)?;
     println!("UPDATE: OK");
 
+    let _ = client.delete(&meta.id)?;
+    println!("DELETE: OK");
+
     Ok(())
 }
