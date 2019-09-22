@@ -59,6 +59,10 @@ let all: Vec<Data> = client.read_all()?;
 println!("READ: len={}, all={:?}", all.len(), all);
 ```
 
+### READ (filter) / READ (sort) / READ (limit)
+
+_WIP_
+
 ### UPDATE
 
 ```rust
