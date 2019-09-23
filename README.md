@@ -59,7 +59,7 @@ println!("READ: data={:?}, meta={:?}", record, meta);
 ### READ (all)
 
 ```rust
-let all: Vec<Data> = client.read_all()?;
+let all = client.read_all::<Data>()?;
 println!("READ: len={}, all={:?}", all.len(), all);
 ```
 
