@@ -1,5 +1,6 @@
 [![crates.io](https://img.shields.io/crates/v/jsonbox.svg)](https://crates.io/crates/jsonbox)
 [![docs.rs](https://docs.rs/jsonbox/badge.svg)](https://docs.rs/jsonbox)
+[![actions](https://github.com/kuy/jsonbox-rs/workflows/Main/badge.svg)](https://github.com/kuy/jsonbox-rs/actions)
 
 # jsonbox.rs
 
