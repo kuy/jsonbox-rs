@@ -16,6 +16,10 @@ serde = "1.0"
 serde_json = "1.0"
 snafu = "0.1.5"
 
+[dev-dependencies]
+mockito = "0.20"
+matches = "0.1.8"
+
 [[example]]
 name = "hello_jsonbox"
 
