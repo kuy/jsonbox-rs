@@ -102,11 +102,9 @@ impl Client {
         T: DeserializeOwned,
     {
         let url = url::of_record(&self.base_url, &self.box_id, id);
-        println!("url={}", url);
         let mut res = reqwest::get(&url).context(Network {})?;
         if res.status().is_success() {
             let raw = res.text().context(Network {})?;
-            println!("raw={}", raw);
             let data: T = serde_json::from_str(&raw).context(Json { reason: "data" })?;
             let meta: Meta = serde_json::from_str(&raw).context(Json { reason: "meta" })?;
             Ok((data, meta))
