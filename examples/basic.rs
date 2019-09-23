@@ -28,7 +28,7 @@ fn main() -> Result<(), Error> {
     let (record, meta) = client.read::<Data>(&meta.id)?;
     println!("READ: data={:?}, meta={:?}", record, meta);
 
-    let all: Vec<Data> = client.read_all()?;
+    let all = client.read_all::<Data>()?;
     println!("READ: len={}, all={:?}", all.len(), all);
 
     data.message = format!("Hello, GitHub! [{}]", meta.id);

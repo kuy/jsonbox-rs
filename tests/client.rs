@@ -45,15 +45,13 @@ fn test_read_all() {
     let all = res.unwrap();
     assert_eq!(all.len(), 2);
 
-    let data = all.first().unwrap();
+    let (data, meta) = all.first().unwrap();
     assert_eq!(data.name, "kuy");
+    assert_eq!(meta.id, "11111111111111111111");
 
-    // TODO: check record id
-
-    let data = all.last().unwrap();
+    let (data, meta) = all.last().unwrap();
     assert_eq!(data.name, "github");
-
-    // TODO: check record id
+    assert_eq!(meta.id, "22222222222222222222");
 }
 
 #[test]

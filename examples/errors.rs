@@ -12,20 +12,20 @@ pub struct Data {
 pub struct Empty;
 
 fn main() {
-    let client = Client::new("kuy_________________");
+    let client = Client::new("kuy_00000000000000000000");
 
     let data = Data { num: 42 };
-    match client.update("xxx", &data) {
+    match client.update("11111111111111111111", &data) {
         Err(Error::General { code, message }) => {
             println!("UPDATE: code={}, message={}", code, message)
         }
-        _ => println!("Failed: UPDATE: No expected errors"),
+        _ => println!("Failed: UPDATE: No errors"),
     }
 
-    match client.create(&Empty) {
+    match client.delete("11111111111111111111") {
         Err(Error::General { code, message }) => {
             println!("CREATE: code={}, message={}", code, message)
         }
-        _ => println!("Failed: CREATE: No expected errors"),
+        _ => println!("Failed: DELETE: No errors"),
     }
 }

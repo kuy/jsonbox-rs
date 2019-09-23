@@ -78,7 +78,7 @@ impl Client {
         }
     }
 
-    pub fn read_all<T>(&self) -> Result<Vec<T>>
+    pub fn read_all<T>(&self) -> Result<Vec<(T, Meta)>>
     where
         T: DeserializeOwned,
     {
@@ -87,7 +87,8 @@ impl Client {
         if res.status().is_success() {
             let raw = res.text().context(Network {})?;
             let data: Vec<T> = serde_json::from_str(&raw).context(Json { reason: "data" })?;
-            Ok(data)
+            let meta: Vec<Meta> = serde_json::from_str(&raw).context(Json { reason: "meta" })?;
+            Ok(data.into_iter().zip(meta.into_iter()).collect())
         } else {
             let err: ErrorMessage = res.json().context(Network {})?;
             Err(Error::General {

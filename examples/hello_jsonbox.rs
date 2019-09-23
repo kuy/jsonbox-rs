@@ -13,12 +13,13 @@ pub struct Greeting {
 fn main() -> Result<(), Error> {
     let client = Client::new("kuy_ed82aef3f93176996146");
 
-    let records: Vec<Greeting> = client.read_all()?;
-    if let Some(record) = records.first() {
+    let all = client.read_all::<Greeting>()?;
+    if let Some((record, meta)) = all.first() {
         println!(
-            "Greeting from {}: {}",
+            "Greeting from {} at {}: {}",
             record.name.trim(),
-            record.message.trim()
+            meta.created_on.trim(),
+            record.message.trim(),
         );
     } else {
         println!("No message left, you're the first.");
