@@ -144,3 +144,14 @@ impl Client {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_client_new() {
+        let client = Client::new("01234012340123401234");
+        assert_eq!(client.box_id, "01234012340123401234");
+    }
+}
