@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 struct Data {
     name: String,
-    message: String,
+    count: i32,
 }
 
 #[test]
@@ -14,19 +14,19 @@ fn test_create() {
     let _m = mock("POST", "/00000000000000000000")
         .with_status(200)
         .with_header("content-type", "application/json; charset=utf-8")
-        .with_body(r#"{"_id":"11111111111111111111","name":"rust","message":"jsonbox","_createdOn":"2019-09-22T12:24:37.513Z"}"#)
+        .with_body(r#"{"_id":"11111111111111111111","name":"rust","count":42,"_createdOn":"2019-09-22T12:24:37.513Z"}"#)
         .create();
     let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
     let data = Data {
         name: "rust".into(),
-        message: "jsonbox".into(),
+        count: 42,
     };
     let res = client.create(&data);
     assert!(res.is_ok());
 
     let (data, meta) = res.unwrap();
     assert_eq!(data.name, "rust");
-    assert_eq!(data.message, "jsonbox");
+    assert_eq!(data.count, 42);
     assert_eq!(meta.id, "11111111111111111111");
     assert_eq!(meta.created_on, "2019-09-22T12:24:37.513Z");
 }
@@ -36,10 +36,10 @@ fn test_read_all() {
     let _m = mock("GET", "/00000000000000000000")
         .with_status(200)
         .with_header("content-type", "application/json; charset=utf-8")
-        .with_body(r#"[{"_id":"11111111111111111111","name":"kuy","message":"Hello, Jsonbox!","_createdOn":"2019-09-22T12:24:37.513Z"},{"_id":"22222222222222222222","name":"github","message":"Hello, Rust!","_createdOn":"2019-09-21T12:24:37.513Z"}]"#)
+        .with_body(r#"[{"_id":"11111111111111111111","name":"kuy","count":42,"_createdOn":"2019-09-23T12:24:37.513Z"},{"_id":"22222222222222222222","name":"github","count":7,"_createdOn":"2019-09-22T12:24:37.513Z"}]"#)
         .create();
     let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
-    let res = client.read_all::<Data>();
+    let res = client.read().all::<Data>();
     assert!(res.is_ok());
 
     let all = res.unwrap();
@@ -62,7 +62,7 @@ fn test_read_all_empty() {
         .with_body("[]")
         .create();
     let client = Client::with_base_url("99999999999999999999", &mockito::server_url());
-    let res = client.read_all::<Data>();
+    let res = client.read().all::<Data>();
     assert!(res.is_ok());
 
     let all = res.unwrap();
@@ -70,19 +70,82 @@ fn test_read_all_empty() {
 }
 
 #[test]
+fn test_read_limit() {
+    let _m = mock("GET", "/00000000000000000000?sort=-_createdOn&skip=0&limit=1")
+        .with_status(200)
+        .with_header("content-type", "application/json; charset=utf-8")
+        .with_body(r#"[{"_id":"11111111111111111111","name":"kuy","count":42,"_createdOn":"2019-09-23T12:24:37.513Z"}]"#)
+        .create();
+    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let res = client.read().limit(1).run::<Data>();
+    assert!(res.is_ok());
+
+    let all = res.unwrap();
+    assert_eq!(all.len(), 1);
+
+    let (data, meta) = all.first().unwrap();
+    assert_eq!(data.name, "kuy");
+    assert_eq!(meta.id, "11111111111111111111");
+}
+
+#[test]
+fn test_read_skip() {
+    let _m = mock("GET", "/00000000000000000000?sort=-_createdOn&skip=1&limit=20")
+        .with_status(200)
+        .with_header("content-type", "application/json; charset=utf-8")
+        .with_body(r#"[{"_id":"22222222222222222222","name":"github","count":7,"_createdOn":"2019-09-22T12:24:37.513Z"}]"#)
+        .create();
+    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let res = client.read().skip(1).run::<Data>();
+    assert!(res.is_ok());
+
+    let all = res.unwrap();
+    assert_eq!(all.len(), 1);
+
+    let (data, meta) = all.first().unwrap();
+    assert_eq!(data.name, "github");
+    assert_eq!(meta.id, "22222222222222222222");
+}
+
+#[test]
+fn test_read_sort() {
+    let _m = mock("GET", "/00000000000000000000?sort=count&skip=0&limit=20")
+        .with_status(200)
+        .with_header("content-type", "application/json; charset=utf-8")
+        .with_body(r#"[{"_id":"22222222222222222222","name":"github","count":7,"_createdOn":"2019-09-22T12:24:37.513Z"},{"_id":"11111111111111111111","name":"kuy","count":42,"_createdOn":"2019-09-23T12:24:37.513Z"}]"#)
+        .create();
+    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let res = client.read().order_by("count").run::<Data>();
+    assert!(res.is_ok());
+
+    let all = res.unwrap();
+    assert_eq!(all.len(), 2);
+
+    let (data, meta) = all.first().unwrap();
+    assert_eq!(data.name, "github");
+    assert_eq!(data.count, 7);
+    assert_eq!(meta.id, "22222222222222222222");
+
+    let (data, meta) = all.last().unwrap();
+    assert_eq!(data.name, "kuy");
+    assert_eq!(data.count, 42);
+    assert_eq!(meta.id, "11111111111111111111");
+}
+
+#[test]
 fn test_read() {
     let _m = mock("GET", "/00000000000000000000/11111111111111111111")
         .with_status(200)
         .with_header("content-type", "application/json; charset=utf-8")
-        .with_body(r#"{"_id":"11111111111111111111","name":"kuy","message":"Hello, Jsonbox!","_createdOn":"2019-09-22T12:24:37.513Z"}"#)
+        .with_body(r#"{"_id":"11111111111111111111","name":"kuy","count":42,"_createdOn":"2019-09-22T12:24:37.513Z"}"#)
         .create();
     let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
-    let res = client.read::<Data>("11111111111111111111");
+    let res = client.read().id::<Data>("11111111111111111111");
     assert!(res.is_ok());
 
     let (data, meta) = res.unwrap();
     assert_eq!(data.name, "kuy");
-    assert_eq!(data.message, "Hello, Jsonbox!");
+    assert_eq!(data.count, 42);
     assert_eq!(meta.id, "11111111111111111111");
     assert_eq!(meta.created_on, "2019-09-22T12:24:37.513Z");
 }
@@ -95,7 +158,7 @@ fn test_read_unknown_record_id() {
         .with_body(r#"{"message":"Cannot read property '_id' of null"}"#)
         .create();
     let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
-    let res = client.read::<Data>("11111111111111111111");
+    let res = client.read().id::<Data>("11111111111111111111");
     assert!(res.is_err());
 
     let err = res.unwrap_err();
@@ -112,7 +175,7 @@ fn test_update() {
     let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
     let data = Data {
         name: "cargo".into(),
-        message: "update".into(),
+        count: 42,
     };
     let res = client.update("33333333333333333333", &data);
     assert!(res.is_ok());
@@ -128,7 +191,7 @@ fn test_update_unknown_record_id() {
     let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
     let data = Data {
         name: "crates".into(),
-        message: "io".into(),
+        count: 42,
     };
     let res = client.update("11111111111111111111", &data);
     assert!(res.is_err());

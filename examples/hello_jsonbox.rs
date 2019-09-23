@@ -13,7 +13,7 @@ pub struct Greeting {
 fn main() -> Result<(), Error> {
     let client = Client::new("kuy_ed82aef3f93176996146");
 
-    let all = client.read_all::<Greeting>()?;
+    let all = client.read().all::<Greeting>()?;
     if let Some((record, meta)) = all.first() {
         println!(
             "Greeting from {} at {}: {}",

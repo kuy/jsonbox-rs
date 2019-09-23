@@ -49,23 +49,45 @@ let (record, meta) = client.create(&data)?;
 println!("CREATE: data={:?}, meta={:?}", record, meta);
 ```
 
-### READ (single)
+### READ
+
+#### all (default parameters)
 
 ```rust
-let (record, meta) = client.read::<Data>("5d876d852a780700177c0557")?;
-println!("READ: data={:?}, meta={:?}", record, meta);
-```
-
-### READ (all)
-
-```rust
-let all = client.read_all::<Data>()?;
+let all = client.read().all::<Data>()?;
 println!("READ: len={}, all={:?}", all.len(), all);
 ```
 
-### READ (filter) / READ (sort) / READ (limit)
+#### with record id
 
-_WIP_
+```rust
+let (record, meta) = client.read().id("5d876d852a780700177c0557")?;
+println!("READ: data={:?}, meta={:?}", record, meta);
+```
+
+#### with limit
+
+```rust
+let few = client.read().limit(10).run::<Data>()?;
+println!("READ: len={}, few={:?}", few.len(), few);
+```
+
+#### with skip
+
+```rust
+let rest = client.read().skip(5).run::<Data>()?;
+println!("READ: len={}, rest={:?}", rest.len(), rest);
+```
+
+#### with sort (asc/desc)
+
+```rust
+let asc = client.read().order_by("name").run::<Data>()?;
+println!("READ: len={}, asc={:?}", asc.len(), asc);
+
+let desc = client.read().order_by("count").desc().run::<Data>()?;
+println!("READ: len={}, desc={:?}", desc.len(), desc);
+```
 
 ### UPDATE
 

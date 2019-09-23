@@ -2,6 +2,7 @@ use reqwest;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use snafu::{ResultExt, Snafu};
 
+use crate::query_builder::QueryBuilder;
 use crate::url;
 
 #[derive(Debug, Snafu)]
@@ -78,27 +79,11 @@ impl Client {
         }
     }
 
-    pub fn read_all<T>(&self) -> Result<Vec<(T, Meta)>>
-    where
-        T: DeserializeOwned,
-    {
-        let mut res =
-            reqwest::get(&url::of_box(&self.base_url, &self.box_id)).context(Network {})?;
-        if res.status().is_success() {
-            let raw = res.text().context(Network {})?;
-            let data: Vec<T> = serde_json::from_str(&raw).context(Json { reason: "data" })?;
-            let meta: Vec<Meta> = serde_json::from_str(&raw).context(Json { reason: "meta" })?;
-            Ok(data.into_iter().zip(meta.into_iter()).collect())
-        } else {
-            let err: ErrorMessage = res.json().context(Network {})?;
-            Err(Error::General {
-                code: res.status().as_u16(),
-                message: err.message,
-            })
-        }
+    pub fn read(&self) -> QueryBuilder {
+        QueryBuilder::new(self)
     }
 
-    pub fn read<T>(&self, id: &str) -> Result<(T, Meta)>
+    pub(crate) fn read_by_id<T>(&self, id: &str) -> Result<(T, Meta)>
     where
         T: DeserializeOwned,
     {
@@ -109,6 +94,26 @@ impl Client {
             let data: T = serde_json::from_str(&raw).context(Json { reason: "data" })?;
             let meta: Meta = serde_json::from_str(&raw).context(Json { reason: "meta" })?;
             Ok((data, meta))
+        } else {
+            let err: ErrorMessage = res.json().context(Network {})?;
+            Err(Error::General {
+                code: res.status().as_u16(),
+                message: err.message,
+            })
+        }
+    }
+
+    pub(crate) fn read_by_query<T>(&self, query: &QueryBuilder) -> Result<Vec<(T, Meta)>>
+    where
+        T: DeserializeOwned,
+    {
+        let url = &url::of_query(&self.base_url, &self.box_id, &query.to_string());
+        let mut res = reqwest::get(url).context(Network {})?;
+        if res.status().is_success() {
+            let raw = res.text().context(Network {})?;
+            let data: Vec<T> = serde_json::from_str(&raw).context(Json { reason: "data" })?;
+            let meta: Vec<Meta> = serde_json::from_str(&raw).context(Json { reason: "meta" })?;
+            Ok(data.into_iter().zip(meta.into_iter()).collect())
         } else {
             let err: ErrorMessage = res.json().context(Network {})?;
             Err(Error::General {

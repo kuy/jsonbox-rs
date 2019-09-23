@@ -25,11 +25,17 @@ fn main() -> Result<(), Error> {
     let (record, meta) = client.create(&data)?;
     println!("CREATE: data={:?}, meta={:?}", record, meta);
 
-    let (record, meta) = client.read::<Data>(&meta.id)?;
+    let (record, meta) = client.read().id::<Data>(&meta.id)?;
     println!("READ: data={:?}, meta={:?}", record, meta);
 
-    let all = client.read_all::<Data>()?;
+    let all = client.read().all::<Data>()?;
     println!("READ: len={}, all={:?}", all.len(), all);
+
+    let asc = client.read().order_by("createdOn").run::<Data>()?;
+    println!("READ: len={}, asc={:?}", asc.len(), asc);
+
+    let few = client.read().limit(3).run::<Data>()?;
+    println!("READ: len={}, few={:?}", few.len(), few);
 
     data.message = format!("Hello, GitHub! [{}]", meta.id);
     let _ = client.update(&meta.id, &data)?;
