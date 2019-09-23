@@ -2,6 +2,8 @@
 
 ## [Upcoming]
 
+## [0.0.3] 2019-09-24
+
 ### Added
 
 - Support `sort`, `skip`, `limit` parameters in READ operation
