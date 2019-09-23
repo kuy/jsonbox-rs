@@ -6,16 +6,16 @@ use crate::url;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
-    #[snafu_display("Network: {}", "source")]
+    #[snafu(display("Network: {}", "source"))]
     Network { source: reqwest::Error },
 
-    #[snafu_display("JSON: {}", "source")]
+    #[snafu(display("JSON: {}", "source"))]
     Json {
         reason: String,
         source: serde_json::Error,
     },
 
-    #[snafu_display("General: [{}] {}", "code", "message")]
+    #[snafu(display("General: [{}] {}", "code", "message"))]
     General { code: u16, message: String },
 }
 

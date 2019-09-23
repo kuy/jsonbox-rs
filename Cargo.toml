@@ -14,7 +14,7 @@ edition = "2018"
 reqwest = "0.9.20"
 serde = "1.0"
 serde_json = "1.0"
-snafu = "0.1.5"
+snafu = "0.5"
 
 [dev-dependencies]
 mockito = "0.20"
