@@ -1,26 +1,10 @@
 use reqwest;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use snafu::{ResultExt, Snafu};
+use snafu::ResultExt;
 
+use crate::error::{self, Error, Result};
 use crate::query_builder::QueryBuilder;
 use crate::url;
-
-#[derive(Debug, Snafu)]
-pub enum Error {
-    #[snafu(display("Network: {}", "source"))]
-    Network { source: reqwest::Error },
-
-    #[snafu(display("JSON: {}", "source"))]
-    Json {
-        reason: String,
-        source: serde_json::Error,
-    },
-
-    #[snafu(display("General: [{}] {}", "code", "message"))]
-    General { code: u16, message: String },
-}
-
-pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 #[derive(Deserialize, Debug)]
 pub struct Meta {
@@ -64,14 +48,14 @@ impl Client {
             .post(&url::of_box(&self.base_url, &self.box_id))
             .json(&data)
             .send()
-            .context(Network {})?;
+            .context(error::Network {})?;
         if res.status().is_success() {
-            let raw = res.text().context(Network {})?;
-            let data: T = serde_json::from_str(&raw).context(Json { reason: "data" })?;
-            let meta: Meta = serde_json::from_str(&raw).context(Json { reason: "meta" })?;
+            let raw = res.text().context(error::Network {})?;
+            let data: T = serde_json::from_str(&raw).context(error::Json { reason: "data" })?;
+            let meta: Meta = serde_json::from_str(&raw).context(error::Json { reason: "meta" })?;
             Ok((data, meta))
         } else {
-            let err: ErrorMessage = res.json().context(Network {})?;
+            let err: ErrorMessage = res.json().context(error::Network {})?;
             Err(Error::General {
                 code: res.status().as_u16(),
                 message: err.message,
@@ -88,14 +72,14 @@ impl Client {
         T: DeserializeOwned,
     {
         let url = url::of_record(&self.base_url, &self.box_id, id);
-        let mut res = reqwest::get(&url).context(Network {})?;
+        let mut res = reqwest::get(&url).context(error::Network {})?;
         if res.status().is_success() {
-            let raw = res.text().context(Network {})?;
-            let data: T = serde_json::from_str(&raw).context(Json { reason: "data" })?;
-            let meta: Meta = serde_json::from_str(&raw).context(Json { reason: "meta" })?;
+            let raw = res.text().context(error::Network {})?;
+            let data: T = serde_json::from_str(&raw).context(error::Json { reason: "data" })?;
+            let meta: Meta = serde_json::from_str(&raw).context(error::Json { reason: "meta" })?;
             Ok((data, meta))
         } else {
-            let err: ErrorMessage = res.json().context(Network {})?;
+            let err: ErrorMessage = res.json().context(error::Network {})?;
             Err(Error::General {
                 code: res.status().as_u16(),
                 message: err.message,
@@ -108,14 +92,16 @@ impl Client {
         T: DeserializeOwned,
     {
         let url = &url::of_query(&self.base_url, &self.box_id, &query.to_string());
-        let mut res = reqwest::get(url).context(Network {})?;
+        let mut res = reqwest::get(url).context(error::Network {})?;
         if res.status().is_success() {
-            let raw = res.text().context(Network {})?;
-            let data: Vec<T> = serde_json::from_str(&raw).context(Json { reason: "data" })?;
-            let meta: Vec<Meta> = serde_json::from_str(&raw).context(Json { reason: "meta" })?;
+            let raw = res.text().context(error::Network {})?;
+            let data: Vec<T> =
+                serde_json::from_str(&raw).context(error::Json { reason: "data" })?;
+            let meta: Vec<Meta> =
+                serde_json::from_str(&raw).context(error::Json { reason: "meta" })?;
             Ok(data.into_iter().zip(meta.into_iter()).collect())
         } else {
-            let err: ErrorMessage = res.json().context(Network {})?;
+            let err: ErrorMessage = res.json().context(error::Network {})?;
             Err(Error::General {
                 code: res.status().as_u16(),
                 message: err.message,
@@ -132,12 +118,12 @@ impl Client {
             .put(&url::of_record(&self.base_url, &self.box_id, id))
             .json(&data)
             .send()
-            .context(Network {})?;
+            .context(error::Network {})?;
         if res.status().is_success() {
             Ok(())
         } else {
-            let err: ErrorMessage = res.json().context(Network {})?;
-            Err(Error::General {
+            let err: ErrorMessage = res.json().context(error::Network {})?;
+            Err(error::Error::General {
                 code: res.status().as_u16(),
                 message: err.message,
             })
@@ -149,11 +135,11 @@ impl Client {
         let mut res = client
             .delete(&url::of_record(&self.base_url, &self.box_id, id))
             .send()
-            .context(Network {})?;
+            .context(error::Network {})?;
         if res.status().is_success() {
             Ok(())
         } else {
-            let err: ErrorMessage = res.json().context(Network {})?;
+            let err: ErrorMessage = res.json().context(error::Network {})?;
             Err(Error::General {
                 code: res.status().as_u16(),
                 message: err.message,

@@ -1,6 +1,7 @@
 use serde::de::DeserializeOwned;
 
-use crate::client::{Client, Meta, Result};
+use crate::client::{Client, Meta};
+use crate::error::Result;
 
 #[derive(Clone)]
 pub enum Order {
