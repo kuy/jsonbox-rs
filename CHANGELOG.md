@@ -2,9 +2,13 @@
 
 ## [Upcoming]
 
+## [0.1.0] 2019-09-25
+
+A version of nearly feature-complete.
+
 ### Added
 
-- Support filter option (`q` param) for READ operation
+- Support filter option (`q` param) for `READ` operation
 
 ## [0.0.3] 2019-09-24
 
@@ -16,7 +20,7 @@
 
 ### Added
 
-- Support `sort`, `skip`, `limit` parameters in READ operation
+- Support `sort`, `skip`, `limit` parameters in `READ` operation
 
 ### Changed
 
