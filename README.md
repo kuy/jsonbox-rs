@@ -107,8 +107,8 @@ println!("DELETE: OK");
 ## Examples
 
 - [jsonbox-todo-example](https://github.com/kuy/jsonbox-todo-example)
-- [hello_jsonbox](https://github.com/kuy/jsonbox-rs/blob/master/examples/hello_jsonbox.rs)
-  - `cargo run --example hello_jsonbox`
+- [hello](https://github.com/kuy/jsonbox-rs/blob/master/examples/hello.rs)
+  - `cargo run --example hello`
 - [basic](https://github.com/kuy/jsonbox-rs/blob/master/examples/basic.rs)
   - `cargo run --example basic`
 - [errors](https://github.com/kuy/jsonbox-rs/blob/master/examples/errors.rs)
