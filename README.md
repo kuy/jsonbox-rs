@@ -4,8 +4,6 @@
 [![docs.rs](https://docs.rs/jsonbox/badge.svg)](https://docs.rs/jsonbox)
 [![build](https://github.com/kuy/jsonbox-rs/workflows/build/badge.svg)](https://github.com/kuy/jsonbox-rs/actions)
 
-**⚠️ NOTICE: Alpha quality. Unstable API ⚠️**
-
 ⚙️ Rust wrapper for 📦 [jsonbox.io](https://jsonbox.io/).
 
 ## Usage
