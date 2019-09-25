@@ -58,7 +58,7 @@ let all = client.read().all::<Data>()?;
 println!("READ: len={}, all={:?}", all.len(), all);
 ```
 
-#### with record id
+#### with specific id
 
 ```rust
 let (record, meta) = client.read().id("5d876d852a780700177c0557")?;
@@ -79,7 +79,7 @@ let rest = client.read().skip(5).run::<Data>()?;
 println!("READ: len={}, rest={:?}", rest.len(), rest);
 ```
 
-#### with sort (asc/desc)
+#### with order (asc/desc)
 
 ```rust
 let asc = client.read().order_by("name").run::<Data>()?;
@@ -89,18 +89,30 @@ let desc = client.read().order_by("count").desc().run::<Data>()?;
 println!("READ: len={}, desc={:?}", desc.len(), desc);
 ```
 
+#### with filter
+
+```rust
+let filtered = client
+    .read()
+    .filter_by("name:{}", "Json Box")
+    .run::<Data>()?;
+println!("READ: len={}, filtered={:?}", filtered.len(), filtered);
+```
+
+See [baisc example](https://github.com/kuy/jsonbox-rs/blob/master/examples/basic.rs) or [official documentation](https://github.com/vasanthv/jsonbox#filtering) for more about filters.
+
 ### UPDATE
 
 ```rust
 let data = Data::new("kuy", "Hello, Jsonbox!");
-let _ = client.update("5d876d852a780700177c0557", &data)?;
+client.update("5d876d852a780700177c0557", &data)?;
 println!("UPDATE: OK");
 ```
 
 ### DELETE
 
 ```rust
-let _ = client.delete("5d876d852a780700177c0557")?;
+client.delete("5d876d852a780700177c0557")?;
 println!("DELETE: OK");
 ```
 

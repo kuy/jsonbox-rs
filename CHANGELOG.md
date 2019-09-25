@@ -2,7 +2,17 @@
 
 ## [Upcoming]
 
+### Added
+
+- Support filter option (`q` param) for READ operation
+
 ## [0.0.3] 2019-09-24
+
+### Breading Changes
+
+- Now `Client::read()` returns `QueryBuilder` instance
+- Use `QueryBuilder::all()` instead of `Client::read_all()`
+- Use `QueryBuilder::id()` instead of `Client::read()`
 
 ### Added
 
