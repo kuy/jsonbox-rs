@@ -29,6 +29,7 @@ fn test_create() {
     assert_eq!(data.count, 42);
     assert_eq!(meta.id, "11111111111111111111");
     assert_eq!(meta.created_on, "2019-09-22T12:24:37.513Z");
+    assert_eq!(meta.updated_on, "2019-09-22T12:24:37.513Z");
 }
 
 #[test]
@@ -148,6 +149,7 @@ fn test_read() {
     assert_eq!(data.count, 42);
     assert_eq!(meta.id, "11111111111111111111");
     assert_eq!(meta.created_on, "2019-09-22T12:24:37.513Z");
+    assert_eq!(meta.updated_on, "2019-09-22T12:24:37.513Z");
 }
 
 #[test]
@@ -172,6 +174,7 @@ fn test_update() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"{"message":"Record updated."}"#)
         .create();
+
     let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
     let data = Data {
         name: "cargo".into(),
@@ -179,6 +182,22 @@ fn test_update() {
     };
     let res = client.update("33333333333333333333", &data);
     assert!(res.is_ok());
+
+    let _m = mock("GET", "/00000000000000000000/33333333333333333333")
+        .with_status(200)
+        .with_header("content-type", "application/json; charset=utf-8")
+        .with_body(r#"{"_id":"33333333333333333333","name":"cargo","count":42,"_createdOn":"2019-09-22T12:24:37.513Z","_updatedOn":"2019-09-22T12:25:52.114Z"}"#)
+        .create();
+
+    let res = client.read().id::<Data>("33333333333333333333");
+    assert!(res.is_ok());
+
+    let (data, meta) = res.unwrap();
+    assert_eq!(data.name, "cargo");
+    assert_eq!(data.count, 42);
+    assert_eq!(meta.id, "33333333333333333333");
+    assert_eq!(meta.created_on, "2019-09-22T12:24:37.513Z");
+    assert_eq!(meta.updated_on, "2019-09-22T12:25:52.114Z");
 }
 
 #[test]

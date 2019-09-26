@@ -1,17 +1,41 @@
 use reqwest;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use snafu::ResultExt;
+use std::convert::From;
 
 use crate::error::{self, Error, Result};
 use crate::query_builder::QueryBuilder;
 use crate::url;
 
 #[derive(Deserialize, Debug)]
-pub struct Meta {
+struct MetaRaw {
     #[serde(rename = "_id")]
-    pub id: String,
+    id: String,
     #[serde(rename = "_createdOn")]
+    created_on: String,
+    #[serde(rename = "_updatedOn", default)]
+    updated_on: Option<String>,
+}
+
+#[derive(Debug)]
+pub struct Meta {
+    pub id: String,
     pub created_on: String,
+    pub updated_on: String,
+}
+
+impl From<MetaRaw> for Meta {
+    fn from(meta: MetaRaw) -> Self {
+        let updated_on = match meta.updated_on {
+            Some(date) => date,
+            None => meta.created_on.clone(),
+        };
+        Meta {
+            id: meta.id.clone(),
+            created_on: meta.created_on.clone(),
+            updated_on,
+        }
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -52,8 +76,9 @@ impl Client {
         if res.status().is_success() {
             let raw = res.text().context(error::Network {})?;
             let data: T = serde_json::from_str(&raw).context(error::Json { reason: "data" })?;
-            let meta: Meta = serde_json::from_str(&raw).context(error::Json { reason: "meta" })?;
-            Ok((data, meta))
+            let meta: MetaRaw =
+                serde_json::from_str(&raw).context(error::Json { reason: "meta" })?;
+            Ok((data, Meta::from(meta)))
         } else {
             let err: ErrorMessage = res.json().context(error::Network {})?;
             Err(Error::General {
@@ -76,8 +101,9 @@ impl Client {
         if res.status().is_success() {
             let raw = res.text().context(error::Network {})?;
             let data: T = serde_json::from_str(&raw).context(error::Json { reason: "data" })?;
-            let meta: Meta = serde_json::from_str(&raw).context(error::Json { reason: "meta" })?;
-            Ok((data, meta))
+            let meta: MetaRaw =
+                serde_json::from_str(&raw).context(error::Json { reason: "meta" })?;
+            Ok((data, Meta::from(meta)))
         } else {
             let err: ErrorMessage = res.json().context(error::Network {})?;
             Err(Error::General {
@@ -97,9 +123,12 @@ impl Client {
             let raw = res.text().context(error::Network {})?;
             let data: Vec<T> =
                 serde_json::from_str(&raw).context(error::Json { reason: "data" })?;
-            let meta: Vec<Meta> =
+            let meta: Vec<MetaRaw> =
                 serde_json::from_str(&raw).context(error::Json { reason: "meta" })?;
-            Ok(data.into_iter().zip(meta.into_iter()).collect())
+            Ok(data
+                .into_iter()
+                .zip(meta.into_iter().map(|meta| Meta::from(meta)))
+                .collect())
         } else {
             let err: ErrorMessage = res.json().context(error::Network {})?;
             Err(Error::General {

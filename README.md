@@ -24,13 +24,13 @@ fn main() -> Result<(), Error> {
     // Create client with <BOX_ID>
     let client = Client::new("enjoy_your_first_jsonbox_rs");
 
-    // Put data
+    // Insert data
     let data = Data {
         name: "kuy".into(),
         message: "Hello, Jsonbox!".into(),
     };
     let (record, meta) = client.create(&data)?;
-    println!("CREATE: data={:?}, meta={:?}", record, meta);
+    println!("CREATE: data={:?}, id={} @{}", record, meta.id, meta.created_on);
 
     Ok(())
 }
