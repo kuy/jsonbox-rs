@@ -1,6 +1,6 @@
 [package]
 name = "jsonbox"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Yuki Kodama <endflow.net@gmail.com>"]
 description = "Rust wrapper for jsonbox.io"
 homepage = "https://github.com/kuy/jsonbox-rs"

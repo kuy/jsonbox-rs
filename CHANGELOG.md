@@ -2,6 +2,12 @@
 
 ## [Upcoming]
 
+## [0.1.1] 2019-09-26
+
+### Changed
+
+- Add `updated_on` field to `Meta` struct [[#4](https://github.com/kuy/jsonbox-rs/issues/4)]
+
 ## [0.1.0] 2019-09-25
 
 A version of nearly feature-complete.
