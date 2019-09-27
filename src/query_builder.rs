@@ -6,14 +6,14 @@ use crate::client::{Client, Meta};
 use crate::error::Result;
 
 #[derive(Clone)]
-pub enum Order {
-    Asc(String),
-    Desc(String),
+pub enum Order<'a> {
+    Asc(&'a str),
+    Desc(&'a str),
 }
 
 pub struct QueryBuilder<'a> {
     client: &'a Client<'a>,
-    sort: Order,
+    sort: Order<'a>,
     skip: u32,
     limit: u32,
     q: Vec<String>,
@@ -30,10 +30,10 @@ impl<'a> QueryBuilder<'a> {
         }
     }
 
-    pub fn order_by(&self, field: &str) -> QueryBuilder {
+    pub fn order_by(&self, field: &'a str) -> QueryBuilder {
         QueryBuilder {
             client: self.client,
-            sort: Order::Asc(field.to_string()),
+            sort: Order::Asc(field),
             skip: self.skip,
             limit: self.limit,
             q: self.q.clone(),
