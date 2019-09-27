@@ -12,7 +12,7 @@ pub enum Order {
 }
 
 pub struct QueryBuilder<'a> {
-    client: &'a Client,
+    client: &'a Client<'a>,
     sort: Order,
     skip: u32,
     limit: u32,
