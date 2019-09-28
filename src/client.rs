@@ -43,24 +43,21 @@ pub struct ErrorMessage {
     pub message: String,
 }
 
-pub struct Client {
-    base_url: String,
-    box_id: String,
+pub struct Client<'a> {
+    base_url: &'a str,
+    box_id: &'a str,
 }
 
-impl Client {
-    pub fn new(box_id: &str) -> Client {
+impl<'a> Client<'a> {
+    pub fn new(box_id: &'a str) -> Client<'a> {
         Client {
-            base_url: url::BASE_URL.to_string(),
-            box_id: box_id.to_string(),
+            base_url: url::BASE_URL,
+            box_id,
         }
     }
 
-    pub fn with_base_url(box_id: &str, base_url: &str) -> Client {
-        Client {
-            base_url: base_url.to_string(),
-            box_id: box_id.to_string(),
-        }
+    pub fn with_base_url(box_id: &'a str, base_url: &'a str) -> Client<'a> {
+        Client { base_url, box_id }
     }
 
     pub fn create<T>(&self, data: &T) -> Result<(T, Meta)>

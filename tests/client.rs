@@ -16,7 +16,8 @@ fn test_create() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"{"_id":"11111111111111111111","name":"rust","count":42,"_createdOn":"2019-09-22T12:24:37.513Z"}"#)
         .create();
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let data = Data {
         name: "rust".into(),
         count: 42,
@@ -39,7 +40,8 @@ fn test_read_all() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"[{"_id":"11111111111111111111","name":"kuy","count":42,"_createdOn":"2019-09-23T12:24:37.513Z"},{"_id":"22222222222222222222","name":"github","count":7,"_createdOn":"2019-09-22T12:24:37.513Z"}]"#)
         .create();
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let res = client.read().all::<Data>();
     assert!(res.is_ok());
 
@@ -62,7 +64,8 @@ fn test_read_all_empty() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body("[]")
         .create();
-    let client = Client::with_base_url("99999999999999999999", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("99999999999999999999", &server_url);
     let res = client.read().all::<Data>();
     assert!(res.is_ok());
 
@@ -77,7 +80,8 @@ fn test_read_limit() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"[{"_id":"11111111111111111111","name":"kuy","count":42,"_createdOn":"2019-09-23T12:24:37.513Z"}]"#)
         .create();
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let res = client.read().limit(1).run::<Data>();
     assert!(res.is_ok());
 
@@ -96,7 +100,8 @@ fn test_read_skip() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"[{"_id":"22222222222222222222","name":"github","count":7,"_createdOn":"2019-09-22T12:24:37.513Z"}]"#)
         .create();
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let res = client.read().skip(1).run::<Data>();
     assert!(res.is_ok());
 
@@ -115,7 +120,8 @@ fn test_read_sort() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"[{"_id":"22222222222222222222","name":"github","count":7,"_createdOn":"2019-09-22T12:24:37.513Z"},{"_id":"11111111111111111111","name":"kuy","count":42,"_createdOn":"2019-09-23T12:24:37.513Z"}]"#)
         .create();
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let res = client.read().order_by("count").run::<Data>();
     assert!(res.is_ok());
 
@@ -140,7 +146,8 @@ fn test_read() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"{"_id":"11111111111111111111","name":"kuy","count":42,"_createdOn":"2019-09-22T12:24:37.513Z"}"#)
         .create();
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let res = client.read().id::<Data>("11111111111111111111");
     assert!(res.is_ok());
 
@@ -159,7 +166,8 @@ fn test_read_unknown_record_id() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"{"message":"Cannot read property '_id' of null"}"#)
         .create();
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let res = client.read().id::<Data>("11111111111111111111");
     assert!(res.is_err());
 
@@ -174,8 +182,8 @@ fn test_update() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"{"message":"Record updated."}"#)
         .create();
-
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let data = Data {
         name: "cargo".into(),
         count: 42,
@@ -207,7 +215,8 @@ fn test_update_unknown_record_id() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"{"message":"Invalid record Id"}"#)
         .create();
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let data = Data {
         name: "crates".into(),
         count: 42,
@@ -226,7 +235,8 @@ fn test_delete() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"{"message":"Record removed."}"#)
         .create();
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let res = client.delete("22222222222222222222");
     assert!(res.is_ok());
 }
@@ -238,7 +248,8 @@ fn test_delete_unknown_record_id() {
         .with_header("content-type", "application/json; charset=utf-8")
         .with_body(r#"{"message":"Invalid record Id"}"#)
         .create();
-    let client = Client::with_base_url("00000000000000000000", &mockito::server_url());
+    let server_url = mockito::server_url();
+    let client = Client::with_base_url("00000000000000000000", &server_url);
     let res = client.delete("44444444444444444444");
     assert!(res.is_err());
 
