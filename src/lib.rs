@@ -118,3 +118,4 @@ mod url;
 
 pub use crate::client::Client;
 pub use crate::error::{Error, Result};
+pub use crate::query_builder::QueryBuilder;

@@ -2,6 +2,10 @@
 
 ## [Upcoming]
 
+### Added
+
+- Add `QueryBuilder::and()` for better chaining [[#6](https://github.com/kuy/jsonbox-rs/issues/6)]
+
 ## [0.1.1] 2019-09-26
 
 ### Changed

@@ -30,6 +30,7 @@ impl<'a> QueryBuilder<'a> {
         }
     }
 
+    /// Set the field for sorting.
     pub fn order_by(&self, field: &'a str) -> QueryBuilder {
         QueryBuilder {
             client: self.client,
@@ -40,6 +41,7 @@ impl<'a> QueryBuilder<'a> {
         }
     }
 
+    /// Set reverse order. Use this with `order_by` method.
     pub fn desc(&self) -> QueryBuilder {
         let field = match &self.sort {
             Order::Asc(f) => f,
@@ -54,6 +56,7 @@ impl<'a> QueryBuilder<'a> {
         }
     }
 
+    /// Limit the number of records of query result.
     pub fn limit(&self, limit: u32) -> QueryBuilder {
         QueryBuilder {
             client: self.client,
@@ -64,6 +67,7 @@ impl<'a> QueryBuilder<'a> {
         }
     }
 
+    /// Specify the number of records to skip.
     pub fn skip(&self, skip: u32) -> QueryBuilder {
         QueryBuilder {
             client: self.client,
@@ -74,6 +78,7 @@ impl<'a> QueryBuilder<'a> {
         }
     }
 
+    /// Set filter option, whkch is mapped `q` parameter in REST API.
     pub fn filter_by<T: Display>(&self, format: &str, value: T) -> QueryBuilder {
         let value = utf8_percent_encode(&format!("{}", value), NON_ALPHANUMERIC).to_string();
         let mut q = self.q.clone();
@@ -87,6 +92,12 @@ impl<'a> QueryBuilder<'a> {
         }
     }
 
+    /// Alias of `filter_by`.
+    pub fn and<T: Display>(&self, format: &str, value: T) -> QueryBuilder {
+        self.filter_by(format, value)
+    }
+
+    /// Get a single record by id.
     pub fn id<T>(&self, id: &str) -> Result<(T, Meta)>
     where
         T: DeserializeOwned,
@@ -94,6 +105,7 @@ impl<'a> QueryBuilder<'a> {
         self.client.read_by_id(id)
     }
 
+    /// Get all records with default query parameters.
     pub fn all<T>(&self) -> Result<Vec<(T, Meta)>>
     where
         T: DeserializeOwned,
@@ -102,6 +114,7 @@ impl<'a> QueryBuilder<'a> {
         self.client.read_by_query(&default)
     }
 
+    /// Run query with configured query parameters.
     pub fn run<T>(&self) -> Result<Vec<(T, Meta)>>
     where
         T: DeserializeOwned,
@@ -109,6 +122,7 @@ impl<'a> QueryBuilder<'a> {
         self.client.read_by_query(self)
     }
 
+    /// Generate query string.
     pub fn to_string(&self) -> String {
         let mut query = format!(
             "sort={}&skip={}&limit={}",
@@ -142,6 +156,22 @@ impl<'a> QueryBuilder<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_to_string() {
+        let c = Client::new("xxx");
+        assert_eq!(
+            QueryBuilder::new(&c)
+                .order_by("count")
+                .desc()
+                .limit(42)
+                .skip(8)
+                .filter_by("count:>{}", 20)
+                .and("count:<{}", 40)
+                .to_string(),
+            "sort=-count&skip=8&limit=42&q=count:>20,count:<40"
+        );
+    }
 
     #[test]
     fn test_sort_string() {

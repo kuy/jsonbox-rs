@@ -66,7 +66,11 @@ fn main() -> Result<(), Error> {
     client.update(&meta2.id, &data)?;
     println!("UPDATE: OK");
 
-    let filtered = client.read().filter_by("age:<{}", 10).run::<Data>()?;
+    let filtered = client
+        .read()
+        .filter_by("age:<{}", 10)
+        .and("login:{}", false)
+        .run::<Data>()?;
     println!("READ: len={}, filtered={:?}", filtered.len(), filtered);
 
     client.delete(&meta1.id)?;
