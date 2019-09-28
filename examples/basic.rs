@@ -4,10 +4,10 @@ use jsonbox::{Client, Error};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Data {
-    pub name: String,
-    pub age: i32,
-    pub login: bool,
+struct Data {
+    name: String,
+    age: i32,
+    login: bool,
 }
 
 impl Data {

@@ -4,12 +4,12 @@ use jsonbox::{Client, Error};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Data {
-    pub num: i32,
+struct Data {
+    num: i32,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Empty;
+struct Empty;
 
 fn main() {
     let client = Client::new("kuy_00000000000000000000");

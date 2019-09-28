@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 use std::io;
 
 #[derive(Serialize, Deserialize)]
-pub struct Greeting {
-    pub name: String,
-    pub message: String,
+struct Greeting {
+    name: String,
+    message: String,
 }
 
 fn main() -> Result<(), Error> {
