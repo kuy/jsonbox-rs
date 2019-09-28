@@ -1,6 +1,6 @@
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use serde::de::DeserializeOwned;
-use std::fmt::Display;
+use std::fmt;
 
 use crate::client::{Client, Meta};
 use crate::error::Result;
@@ -11,6 +11,10 @@ enum Order<'a> {
     Desc(&'a str),
 }
 
+/// A query builder, constructing a request string of `READ` operation
+///
+/// `QueryBuilder::new()` is not exposed. Use `Client::read()` to get a new instance of `QueryBuilder`.
+/// `format!("{:?}", q)` is useful to inspect current query string.
 pub struct QueryBuilder<'a> {
     client: &'a Client<'a>,
     sort: Order<'a>,
@@ -20,7 +24,7 @@ pub struct QueryBuilder<'a> {
 }
 
 impl<'a> QueryBuilder<'a> {
-    pub fn new(client: &'a Client) -> QueryBuilder<'a> {
+    pub(in crate::client) fn new(client: &'a Client) -> QueryBuilder<'a> {
         QueryBuilder {
             client,
             sort: Order::Desc("_createdOn".into()),
@@ -59,7 +63,7 @@ impl<'a> QueryBuilder<'a> {
     }
 
     /// Set filter option, whkch is mapped `q` parameter in REST API.
-    pub fn filter_by<'q, T: Display>(
+    pub fn filter_by<'q, T: fmt::Display>(
         &'q mut self,
         format: &str,
         value: T,
@@ -70,7 +74,11 @@ impl<'a> QueryBuilder<'a> {
     }
 
     /// Alias of `filter_by`.
-    pub fn and<'q, T: Display>(&'q mut self, format: &str, value: T) -> &'q mut QueryBuilder<'a> {
+    pub fn and<'q, T: fmt::Display>(
+        &'q mut self,
+        format: &str,
+        value: T,
+    ) -> &'q mut QueryBuilder<'a> {
         self.filter_by(format, value)
     }
 
@@ -99,8 +107,7 @@ impl<'a> QueryBuilder<'a> {
         self.client.read_by_query(self)
     }
 
-    /// Generate query string.
-    pub fn to_string(&self) -> String {
+    pub(in crate::client) fn to_string(&self) -> String {
         let mut query = format!(
             "sort={}&skip={}&limit={}",
             self.sort_string(),
@@ -127,6 +134,12 @@ impl<'a> QueryBuilder<'a> {
             .fold(String::new(), |acc, q| format!("{}{},", acc, q));
         filter.pop();
         filter
+    }
+}
+
+impl<'a> fmt::Debug for QueryBuilder<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.to_string())
     }
 }
 
