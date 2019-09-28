@@ -111,11 +111,10 @@
 #[cfg(test)]
 extern crate matches;
 
-pub mod client;
+mod client;
 mod error;
-mod query_builder;
 mod url;
 
+pub use crate::client::query_builder::QueryBuilder;
 pub use crate::client::Client;
 pub use crate::error::{Error, Result};
-pub use crate::query_builder::QueryBuilder;

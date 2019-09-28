@@ -6,7 +6,7 @@ use crate::client::{Client, Meta};
 use crate::error::Result;
 
 #[derive(Clone)]
-pub enum Order<'a> {
+enum Order<'a> {
     Asc(&'a str),
     Desc(&'a str),
 }

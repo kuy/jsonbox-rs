@@ -1,11 +1,13 @@
+pub mod query_builder;
+
 use reqwest;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use snafu::ResultExt;
 use std::convert::From;
 
 use crate::error::{self, Error, Result};
-use crate::query_builder::QueryBuilder;
 use crate::url;
+use crate::QueryBuilder;
 
 #[derive(Deserialize, Debug)]
 struct MetaRaw {
@@ -90,7 +92,7 @@ impl<'a> Client<'a> {
         QueryBuilder::new(self)
     }
 
-    pub(crate) fn read_by_id<T>(&self, id: &str) -> Result<(T, Meta)>
+    fn read_by_id<T>(&self, id: &str) -> Result<(T, Meta)>
     where
         T: DeserializeOwned,
     {
@@ -111,7 +113,7 @@ impl<'a> Client<'a> {
         }
     }
 
-    pub(crate) fn read_by_query<T>(&self, query: &QueryBuilder) -> Result<Vec<(T, Meta)>>
+    fn read_by_query<T>(&self, query: &QueryBuilder) -> Result<Vec<(T, Meta)>>
     where
         T: DeserializeOwned,
     {
