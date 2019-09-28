@@ -7,6 +7,10 @@
 - Make `Client::with_base_url()` a method instead of a constructor [[#3](https://github.com/kuy/jsonbox-rs/issues/3)]
 - Change visibility of `Client::read_by_id()` and `Client::read_by_query()` (accidently exposed in past versions) [[#2](https://github.com/kuy/jsonbox-rs/issues/2)]
 
+### Added
+
+- Support bulk `CREATE` operation [[#9](https://github.com/kuy/jsonbox-rs/issues/9)]
+
 ## [0.1.2] 2019-09-28
 
 ### Added

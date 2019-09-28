@@ -34,6 +34,40 @@ fn test_create() {
 }
 
 #[test]
+fn test_create_bulk() {
+    let _m = mock("POST", "/00000000000000000000")
+        .with_status(200)
+        .with_header("content-type", "application/json; charset=utf-8")
+        .with_body(r#"[{"_id":"11111111111111111111","name":"rust","count":42,"_createdOn":"2019-09-22T12:24:37.513Z"},{"_id":"22222222222222222222","name":"cargo","count":7,"_createdOn":"2019-09-22T12:24:37.513Z"}]"#)
+        .create();
+    let server_url = mockito::server_url();
+    let client = Client::new("00000000000000000000").with_base_url(&server_url);
+    let data = vec![
+        Data {
+            name: "rust".into(),
+            count: 42,
+        },
+        Data {
+            name: "cargo".into(),
+            count: 7,
+        },
+    ];
+    let res = client.create_bulk(&data);
+    assert!(res.is_ok());
+
+    let bulk = res.unwrap();
+    assert_eq!(bulk.len(), 2);
+
+    let (data, meta) = bulk.first().unwrap();
+    assert_eq!(data.name, "rust");
+    assert_eq!(meta.id, "11111111111111111111");
+
+    let (data, meta) = bulk.last().unwrap();
+    assert_eq!(data.name, "cargo");
+    assert_eq!(meta.id, "22222222222222222222");
+}
+
+#[test]
 fn test_read_all() {
     let _m = mock("GET", "/00000000000000000000")
         .with_status(200)
