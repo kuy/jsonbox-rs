@@ -9,9 +9,9 @@
 //!
 //! // Define struct
 //! #[derive(Serialize, Deserialize)]
-//! pub struct Data {
-//!     pub name: String,
-//!     pub message: String,
+//! struct Data {
+//!     name: String,
+//!     message: String,
 //! }
 //!
 //! fn main() -> Result<(), Error> {

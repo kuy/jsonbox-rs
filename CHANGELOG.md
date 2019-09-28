@@ -2,6 +2,10 @@
 
 ## [Upcoming]
 
+### Breading Changes
+
+- Change visibility of `QueryBuilder::new()` and `QueryBuilder::to_string()` to avoid unintended use
+
 ### Improved
 
 - Use builder pattern in `QueryBuilder` [[#1](https://github.com/kuy/jsonbox-rs/issues/1)]
