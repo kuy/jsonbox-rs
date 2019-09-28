@@ -7,5 +7,7 @@ jobs:
       - uses: actions/checkout@master
       - name: Build
         run: cargo build --verbose
+      - name: Build examples
+        run: cargo build --example basic && cargo build --example errors && cargo build --example hello
       - name: Run tests
         run: cargo test --verbose
