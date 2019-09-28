@@ -2,9 +2,15 @@
 
 ## [Upcoming]
 
+## [0.1.2] 2019-09-28
+
 ### Added
 
 - Add `QueryBuilder::and()` for better chaining [[#6](https://github.com/kuy/jsonbox-rs/issues/6)]
+
+### Refactoring
+
+- Remove `to_string` and `String` [[#10](https://github.com/kuy/jsonbox-rs/pull/10)] by [@rchaser53](https://github.com/rchaser53)
 
 ## [0.1.1] 2019-09-26
 
