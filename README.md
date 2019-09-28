@@ -36,6 +36,8 @@ fn main() -> Result<(), Error> {
 }
 ```
 
+See [full documentation](https://docs.rs/jsonbox).
+
 ### CREATE
 
 ```rust
@@ -46,6 +48,8 @@ let data = Data {
 let (record, meta) = client.create(&data)?;
 println!("CREATE: data={:?}, meta={:?}", record, meta);
 ```
+
+Use [`create_bulk()`](https://docs.rs/jsonbox/latest/jsonbox/struct.Client.html#method.create_bulk) for bulk creation.
 
 ### READ
 
@@ -97,7 +101,7 @@ let filtered = client
 println!("READ: len={}, filtered={:?}", filtered.len(), filtered);
 ```
 
-See [baisc example](https://github.com/kuy/jsonbox-rs/blob/master/examples/basic.rs) or [official documentation](https://github.com/vasanthv/jsonbox#filtering) for more about filters.
+See [QueryBuilder](https://docs.rs/jsonbox/latest/jsonbox/struct.QueryBuilder.html), [baisc example](https://github.com/kuy/jsonbox-rs/blob/master/examples/basic.rs), or [official documentation](https://github.com/vasanthv/jsonbox#filtering) for more about filters.
 
 ### UPDATE
 
