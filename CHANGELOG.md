@@ -2,6 +2,10 @@
 
 ## [Upcoming]
 
+### Improved
+
+- Use builder pattern in `QueryBuilder` [[#1](https://github.com/kuy/jsonbox-rs/issues/1)]
+
 ## [0.2.0] 2019-09-28
 
 ### Breading Changes

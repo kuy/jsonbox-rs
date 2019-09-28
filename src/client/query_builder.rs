@@ -31,69 +31,46 @@ impl<'a> QueryBuilder<'a> {
     }
 
     /// Set the field for sorting.
-    pub fn order_by(&self, field: &'a str) -> QueryBuilder {
-        QueryBuilder {
-            client: self.client,
-            sort: Order::Asc(field),
-            skip: self.skip,
-            limit: self.limit,
-            q: self.q.clone(),
-        }
+    pub fn order_by<'q>(&'q mut self, field: &'a str) -> &'q mut QueryBuilder<'a> {
+        self.sort = Order::Asc(field);
+        self
     }
 
     /// Set reverse order. Use this with `order_by` method.
-    pub fn desc(&self) -> QueryBuilder {
-        let field = match &self.sort {
+    pub fn desc<'q>(&'q mut self) -> &'q mut QueryBuilder<'a> {
+        let field = match self.sort {
             Order::Asc(f) => f,
             Order::Desc(f) => f,
         };
-        QueryBuilder {
-            client: self.client,
-            sort: Order::Desc(field.clone()),
-            skip: self.skip,
-            limit: self.limit,
-            q: self.q.clone(),
-        }
+        self.sort = Order::Desc(field);
+        self
     }
 
     /// Limit the number of records of query result.
-    pub fn limit(&self, limit: u32) -> QueryBuilder {
-        QueryBuilder {
-            client: self.client,
-            sort: self.sort.clone(),
-            skip: self.skip,
-            limit,
-            q: self.q.clone(),
-        }
+    pub fn limit<'q>(&'q mut self, limit: u32) -> &'q mut QueryBuilder<'a> {
+        self.limit = limit;
+        self
     }
 
     /// Specify the number of records to skip.
-    pub fn skip(&self, skip: u32) -> QueryBuilder {
-        QueryBuilder {
-            client: self.client,
-            sort: self.sort.clone(),
-            skip,
-            limit: self.limit,
-            q: self.q.clone(),
-        }
+    pub fn skip<'q>(&'q mut self, skip: u32) -> &'q mut QueryBuilder<'a> {
+        self.skip = skip;
+        self
     }
 
     /// Set filter option, whkch is mapped `q` parameter in REST API.
-    pub fn filter_by<T: Display>(&self, format: &str, value: T) -> QueryBuilder {
+    pub fn filter_by<'q, T: Display>(
+        &'q mut self,
+        format: &str,
+        value: T,
+    ) -> &'q mut QueryBuilder<'a> {
         let value = utf8_percent_encode(&format!("{}", value), NON_ALPHANUMERIC).to_string();
-        let mut q = self.q.clone();
-        q.push(format.replace("{}", &value));
-        QueryBuilder {
-            client: self.client,
-            sort: self.sort.clone(),
-            skip: self.skip,
-            limit: self.limit,
-            q,
-        }
+        self.q.push(format.replace("{}", &value));
+        self
     }
 
     /// Alias of `filter_by`.
-    pub fn and<T: Display>(&self, format: &str, value: T) -> QueryBuilder {
+    pub fn and<'q, T: Display>(&'q mut self, format: &str, value: T) -> &'q mut QueryBuilder<'a> {
         self.filter_by(format, value)
     }
 
@@ -176,32 +153,32 @@ mod tests {
     #[test]
     fn test_sort_string() {
         let c = Client::new("xxx");
-        let q = QueryBuilder::new(&c);
+        let mut q = QueryBuilder::new(&c);
         assert_eq!(q.sort_string(), "-_createdOn");
 
-        let q = q.order_by("name");
+        q.order_by("name");
         assert_eq!(q.sort_string(), "name");
 
-        let q = q.desc();
+        q.desc();
         assert_eq!(q.sort_string(), "-name");
     }
 
     #[test]
     fn test_filter_string() {
         let c = Client::new("xxx");
-        let q = QueryBuilder::new(&c);
+        let mut q = QueryBuilder::new(&c);
         assert_eq!(q.filter_string(), "");
 
-        let q = q.filter_by("name:{}", "foo bar");
+        q.filter_by("name:{}", "foo bar");
         assert_eq!(q.filter_string(), "name:foo%20bar");
 
-        let q = q.filter_by("city:{}*", "Los ");
+        q.filter_by("city:{}*", "Los ");
         assert_eq!(q.filter_string(), "name:foo%20bar,city:Los%20*");
 
-        let q = q.filter_by("count:<{}", 42);
+        q.filter_by("count:<{}", 42);
         assert_eq!(q.filter_string(), "name:foo%20bar,city:Los%20*,count:<42");
 
-        let q = q.filter_by("login:{}", true);
+        q.filter_by("login:{}", true);
         assert_eq!(
             q.filter_string(),
             "name:foo%20bar,city:Los%20*,count:<42,login:true"
