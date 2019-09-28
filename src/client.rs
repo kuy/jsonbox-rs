@@ -56,8 +56,9 @@ impl<'a> Client<'a> {
         }
     }
 
-    pub fn with_base_url(box_id: &'a str, base_url: &'a str) -> Client<'a> {
-        Client { base_url, box_id }
+    pub fn with_base_url(mut self, base_url: &'a str) -> Client<'a> {
+        self.base_url = base_url;
+        self
     }
 
     pub fn create<T>(&self, data: &T) -> Result<(T, Meta)>
@@ -187,7 +188,7 @@ mod tests {
 
     #[test]
     fn test_with_base_url() {
-        let client = Client::with_base_url("01234012340123401234", "https://blog.endflow.net");
+        let client = Client::new("01234012340123401234").with_base_url("https://blog.endflow.net");
         assert_eq!(client.base_url, "https://blog.endflow.net");
         assert_eq!(client.box_id, "01234012340123401234");
     }

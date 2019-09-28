@@ -2,6 +2,10 @@
 
 ## [Upcoming]
 
+### Breading Changes
+
+- Make `Client::with_base_url()` a method instead of a constructor [[#3](https://github.com/kuy/jsonbox-rs/issues/3)]
+
 ## [0.1.2] 2019-09-28
 
 ### Added
