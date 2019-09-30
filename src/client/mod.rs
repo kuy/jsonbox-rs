@@ -29,13 +29,13 @@ pub struct Meta {
 
 impl From<MetaRaw> for Meta {
     fn from(meta: MetaRaw) -> Self {
-        let updated_on = match meta.updated_on {
-            Some(date) => date,
-            None => meta.created_on.clone(),
+        let (created_on, updated_on) = match meta.updated_on {
+            Some(date) => (meta.created_on, date),
+            None => (meta.created_on.clone(), meta.created_on),
         };
         Meta {
-            id: meta.id.clone(),
-            created_on: meta.created_on.clone(),
+            id: meta.id,
+            created_on,
             updated_on,
         }
     }
