@@ -23,8 +23,8 @@
 //!         name: "kuy".into(),
 //!         message: "Hello, Jsonbox!".into(),
 //!     };
-//!     let (record, meta) = client.create(&data)?;
-//!     println!("CREATE: data={:?}, meta={:?}", record, meta);
+//!     let res = client.create(&data)?;
+//!     println!("CREATE: data={:?}, meta={:?}", res.data, res.meta);
 //!
 //!     Ok(())
 //! }
@@ -37,8 +37,8 @@
 //!     name: "kuy".into(),
 //!     message: "Hello, Jsonbox!".into(),
 //! };
-//! let (record, meta) = client.create(&data)?;
-//! println!("CREATE: data={:?}, meta={:?}", record, meta);
+//! let res = client.create(&data)?;
+//! println!("CREATE: data={:?}, meta={:?}", res.data, res.meta);
 //! ```
 //!
 //! ### READ
@@ -53,8 +53,8 @@
 //! #### with specific id
 //!
 //! ```ignore
-//! let (record, meta) = client.read().id("5d876d852a780700177c0557")?;
-//! println!("READ: data={:?}, meta={:?}", record, meta);
+//! let res = client.read().id("5d876d852a780700177c0557")?;
+//! println!("READ: data={:?}, meta={:?}", res.data, res.meta);
 //! ```
 //!
 //! #### with limit
