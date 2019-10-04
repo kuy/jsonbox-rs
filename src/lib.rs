@@ -115,6 +115,6 @@ mod client;
 mod error;
 mod url;
 
-pub use crate::client::query_builder::QueryBuilder;
+pub use crate::client::query_builder::{QueryBuilder, Response};
 pub use crate::client::Client;
 pub use crate::error::{Error, Result};

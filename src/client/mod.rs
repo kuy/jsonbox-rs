@@ -9,8 +9,9 @@ use std::convert::From;
 use crate::error::{self, Error, Result};
 use crate::url;
 use crate::QueryBuilder;
+use crate::Response;
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug, Deserialize)]
 struct MetaRaw {
     #[serde(rename = "_id")]
     id: String,
@@ -20,7 +21,7 @@ struct MetaRaw {
     updated_on: Option<String>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Meta {
     pub id: String,
     pub created_on: String,
@@ -64,7 +65,7 @@ impl<'a> Client<'a> {
         self
     }
 
-    pub fn create<T>(&self, data: &T) -> Result<(T, Meta)>
+    pub fn create<T>(&self, data: &T) -> Result<Response<T>>
     where
         T: Serialize + DeserializeOwned,
     {
@@ -78,7 +79,10 @@ impl<'a> Client<'a> {
             let raw = res.text().context(error::Network {})?;
             let data: T = from_str(&raw).context(error::Json { reason: "data" })?;
             let meta: MetaRaw = from_str(&raw).context(error::Json { reason: "meta" })?;
-            Ok((data, Meta::from(meta)))
+            Ok(Response {
+                data,
+                meta: Meta::from(meta),
+            })
         } else {
             let err: ErrorMessage = res.json().context(error::Network {})?;
             Err(Error::General {
@@ -88,7 +92,7 @@ impl<'a> Client<'a> {
         }
     }
 
-    pub fn create_bulk<T>(&self, data: &Vec<T>) -> Result<Vec<(T, Meta)>>
+    pub fn create_bulk<T>(&self, data: &Vec<T>) -> Result<Vec<Response<T>>>
     where
         T: Serialize + DeserializeOwned,
     {
@@ -105,6 +109,7 @@ impl<'a> Client<'a> {
             Ok(data
                 .into_iter()
                 .zip(meta.into_iter().map(|meta| Meta::from(meta)))
+                .map(|(data, meta)| Response { data, meta })
                 .collect())
         } else {
             let err: ErrorMessage = res.json().context(error::Network {})?;
@@ -119,7 +124,7 @@ impl<'a> Client<'a> {
         QueryBuilder::new(self)
     }
 
-    fn read_by_id<T>(&self, id: &str) -> Result<(T, Meta)>
+    fn read_by_id<T>(&self, id: &str) -> Result<Response<T>>
     where
         T: DeserializeOwned,
     {
@@ -129,7 +134,10 @@ impl<'a> Client<'a> {
             let raw = res.text().context(error::Network {})?;
             let data: T = from_str(&raw).context(error::Json { reason: "data" })?;
             let meta: MetaRaw = from_str(&raw).context(error::Json { reason: "meta" })?;
-            Ok((data, Meta::from(meta)))
+            Ok(Response {
+                meta: Meta::from(meta),
+                data,
+            })
         } else {
             let err: ErrorMessage = res.json().context(error::Network {})?;
             Err(Error::General {
@@ -139,7 +147,7 @@ impl<'a> Client<'a> {
         }
     }
 
-    fn read_by_query<T>(&self, query: &QueryBuilder) -> Result<Vec<(T, Meta)>>
+    fn read_by_query<T>(&self, query: &QueryBuilder) -> Result<Vec<Response<T>>>
     where
         T: DeserializeOwned,
     {
@@ -152,6 +160,7 @@ impl<'a> Client<'a> {
             Ok(data
                 .into_iter()
                 .zip(meta.into_iter().map(|meta| Meta::from(meta)))
+                .map(|(data, meta)| Response { data, meta })
                 .collect())
         } else {
             let err: ErrorMessage = res.json().context(error::Network {})?;
