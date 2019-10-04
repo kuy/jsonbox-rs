@@ -1,5 +1,6 @@
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
 use crate::client::{Client, Meta};
@@ -21,6 +22,12 @@ pub struct QueryBuilder<'a> {
     skip: u32,
     limit: u32,
     q: Vec<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Response<T> {
+    pub data: T,
+    pub meta: Meta,
 }
 
 impl<'a> QueryBuilder<'a> {
@@ -83,7 +90,7 @@ impl<'a> QueryBuilder<'a> {
     }
 
     /// Get a single record by id.
-    pub fn id<T>(&self, id: &str) -> Result<(T, Meta)>
+    pub fn id<T>(&self, id: &str) -> Result<Response<T>>
     where
         T: DeserializeOwned,
     {
@@ -91,7 +98,7 @@ impl<'a> QueryBuilder<'a> {
     }
 
     /// Get all records with default query parameters.
-    pub fn all<T>(&self) -> Result<Vec<(T, Meta)>>
+    pub fn all<T>(&self) -> Result<Vec<Response<T>>>
     where
         T: DeserializeOwned,
     {
@@ -100,7 +107,7 @@ impl<'a> QueryBuilder<'a> {
     }
 
     /// Run query with configured query parameters.
-    pub fn run<T>(&self) -> Result<Vec<(T, Meta)>>
+    pub fn run<T>(&self) -> Result<Vec<Response<T>>>
     where
         T: DeserializeOwned,
     {

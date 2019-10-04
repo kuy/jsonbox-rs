@@ -14,12 +14,12 @@ fn main() -> Result<(), Error> {
     let client = Client::new("kuy_ed82aef3f93176996146");
 
     let all = client.read().all::<Greeting>()?;
-    if let Some((record, meta)) = all.first() {
+    if let Some(res) = all.first() {
         println!(
             "Greeting from {} at {}: {}",
-            record.name.trim(),
-            meta.created_on.trim(),
-            record.message.trim(),
+            res.data.name.trim(),
+            res.meta.created_on.trim(),
+            res.data.message.trim(),
         );
     } else {
         println!("No message left, you're the first.");

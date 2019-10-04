@@ -24,11 +24,11 @@ fn main() -> Result<(), Error> {
     let client = Client::new("box_8ed82aef3f93176996145");
 
     let mut data = Data::new("kuy", 42, false);
-    let (record, meta1) = client.create(&data)?;
-    println!("CREATE: data={:?}, meta={:?}", record, meta1);
+    let res = client.create(&data)?;
+    println!("CREATE: data={:?}, meta={:?}", res.data, res.meta);
 
-    let (record, meta1) = client.read().id::<Data>(&meta1.id)?;
-    println!("READ single: data={:?}, meta={:?}", record, meta1);
+    let res = client.read().id::<Data>(&res.meta.id)?;
+    println!("READ single: data={:?}, meta={:?}", res.data, res.meta);
 
     let list = vec![Data::new("jsonbox", 21, false), Data::new("io", 16, true)];
     let bulk = client.create_bulk(&list)?;
@@ -43,8 +43,8 @@ fn main() -> Result<(), Error> {
     let few = client.read().limit(1).run::<Data>()?;
     println!("READ: len={}, few={:?}", few.len(), few);
 
-    data.name = format!("kuy {}", meta1.id);
-    client.update(&meta1.id, &data)?;
+    data.name = format!("kuy {}", res.meta.id);
+    client.update(&res.meta.id, &data)?;
     println!("UPDATE: OK");
 
     let filtered = client
@@ -58,12 +58,12 @@ fn main() -> Result<(), Error> {
 
     let filtered = client
         .read()
-        .filter_by("name:*{}", &meta1.id)
+        .filter_by("name:*{}", &res.meta.id)
         .run::<Data>()?;
     println!("READ: len={}, filtered={:?}", filtered.len(), filtered);
 
     data.age = 8;
-    client.update(&meta1.id, &data)?;
+    client.update(&res.meta.id, &data)?;
     println!("UPDATE: OK");
 
     let filtered = client
@@ -73,7 +73,7 @@ fn main() -> Result<(), Error> {
         .run::<Data>()?;
     println!("READ: len={}, filtered={:?}", filtered.len(), filtered);
 
-    client.delete(&meta1.id)?;
+    client.delete(&res.meta.id)?;
     println!("DELETE: OK");
 
     Ok(())
